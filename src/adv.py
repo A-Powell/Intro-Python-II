@@ -109,6 +109,12 @@ while True:
     elif choice == "s":
         if current.s_to == None:
             print("\n**There's nothing there!**")
+        elif current.s_to == room['overlook']:
+            if item['rope'] in newPlayer.inventory:
+                print('\nYou manage to throw your rope and hook it on some rocks then swing across!')
+                newPlayer.room = current.s_to
+            else:
+                print('\nYou need a rope!')
         else:
             newPlayer.room = current.s_to
     elif choice == "w":
@@ -131,9 +137,9 @@ while True:
                 current.remove_item(item[item_choice])
                 item[item_choice].on_take()
             else:
-                print("Item isn't in this room.")
+                print("\nItem isn't in this room.")
         else:
-            print('Item does not exist!')
+            print('\nItem does not exist!')
     elif choice.split()[0] == "drop":
         item_to_drop = choice.split()[1]
         if item_to_drop in item.keys():
@@ -142,8 +148,8 @@ while True:
                 current.add_item(item[item_to_drop])
                 item[item_to_drop].on_drop()
             else:
-                print(f"You don't own a {item[item_to_drop].name}")
+                print(f"\nYou don't own a {item[item_to_drop].name}")
         else:
-            print("That item doesn't exist.")
+            print("\nThat item doesn't exist.")
     else:
-        print("Forbidden movement input.")
+        print("\nForbidden movement input.")
