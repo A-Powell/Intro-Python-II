@@ -1,5 +1,6 @@
 from room import Room
 from player import Player
+from item import Item
 # Declare all the rooms
 
 room = {
@@ -16,8 +17,19 @@ the distance, but there is no way across the chasm."""),
 to north. The smell of gold permeates the air."""),
 
     'treasure': Room("Treasure Chamber", """You've found the long-lost treasure
-chamber! Sadly, it has already been completely emptied by
-earlier adventurers. The only exit is to the south."""),
+chamber! Sadly, it has already been looted by
+earlier adventurers. All that is left is a single piece of gold. The only exit is to the south."""),
+}
+
+# Declare items
+
+item = {
+    'sword': Item("sword", "A small but sharp sword."),
+    'staff': Item("staff", "A slightly magical stick."),
+    'gold': Item('gold', "Lovely money!"),
+    'rope': Item('rope', "A bunch of rope."),
+    'lantern': Item('lantern', "How is this thing working?"),
+    'trout': Item('trout', "Somehow still fresh.")
 }
 
 
@@ -31,6 +43,17 @@ room['overlook'].s_to = room['foyer']
 room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
+
+
+# Add items to rooms
+
+room['outside'].add_item(item['sword'])
+room['foyer'].add_item(item['staff'])
+room['overlook'].add_item(item['lantern'])
+room['narrow'].add_item(item['rope'])
+room['foyer'].add_item(item['trout'])
+room['treasure'].add_item(item['gold'])
+
 
 #
 # Main
@@ -52,44 +75,65 @@ newPlayer = Player('Austin', room['outside'])
 #
 # If the user enters "q", quit the game.
 
+
+
 while True:
     current = newPlayer.room
-    print(f"****Hello {newPlayer.name}. your current location is {current}****")
+    items = newPlayer.room.roomItems
+    print(f"\n****Hello {newPlayer.name}. your current location is {current}****")
+    print(f"\nItems in the area:")
+    for i in items:
+        print(i)
     print('-------------------------------------------------------')
-    choice = input(f"which direction would you like to go? [n, e, s, w, q to quit]: ")
-    print('-------------------------------------------------------')
+    choice = input(f"what would you like to do? Move: [n, e, s, w] Interact: [pickup (item), drop (item), i(inventory)] q(quit): ")
     if choice == "n":
         if current.n_to == None:
-            print('-------------------------------------------------------')
-            print("**There's nothing there!**")
-            print('-------------------------------------------------------')
+            print("\n**There's nothing there!**")
         else:
             newPlayer.room = current.n_to
     elif choice == "e":
         if current.e_to == None:
-            print('-------------------------------------------------------')
-            print("**There's nothing there!**")
-            print('-------------------------------------------------------')
+            print("\n**There's nothing there!**")
         else:
             newPlayer.room = current.e_to
     elif choice == "s":
         if current.s_to == None:
-            print('-------------------------------------------------------')
-            print("**There's nothing there!**")
-            print('-------------------------------------------------------')
+            print("\n**There's nothing there!**")
         else:
             newPlayer.room = current.s_to
     elif choice == "w":
         if current.w_to == None:
-            print('-------------------------------------------------------')
-            print("**There's nothing there!**")
-            print('-------------------------------------------------------')
+            print("\n**There's nothing there!**")
         else:
             newPlayer.room = current.w_to
+    elif choice == "i" or choice == "inventory":
+        print("\nInventory:")
+        for i in newPlayer.inventory:
+            print(i)
     elif choice == "q":
         print("Thanks for playing!")
         exit()
+    elif choice.split()[0] == "pickup":
+        item_choice = choice.split()[1]
+        if item_choice in item.keys():
+            if item[item_choice] in items:
+                newPlayer.pickup(item[item_choice])
+                current.remove_item(item[item_choice])
+                item[item_choice].on_take()
+            else:
+                print("Item isn't in this room.")
+        else:
+            print('Item does not exist!')
+    elif choice.split()[0] == "drop":
+        item_to_drop = choice.split()[1]
+        if item_to_drop in item.keys():
+            if item[item_to_drop] in newPlayer.inventory:
+                newPlayer.drop_item(item[item_to_drop])
+                current.add_item(item[item_to_drop])
+                item[item_to_drop].on_drop()
+            else:
+                print(f"You don't own a {item[item_to_drop].name}")
+        else:
+            print("That item doesn't exist.")
     else:
-        print('-------------------------------------------------------')
         print("Forbidden movement input.")
-        print('-------------------------------------------------------')
