@@ -1,10 +1,9 @@
 from room import Room
-
+from player import Player
 # Declare all the rooms
 
 room = {
-    'outside':  Room("Outside Cave Entrance",
-                     "North of you, the cave mount beckons"),
+    'outside':  Room("Outside Cave Entrance", """North of you, the cave mount beckons"""),
 
     'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
 passages run north and east."""),
@@ -38,6 +37,9 @@ room['treasure'].s_to = room['narrow']
 #
 
 # Make a new player object that is currently in the 'outside' room.
+newPlayer = Player('Austin', room['outside'])
+
+
 
 # Write a loop that:
 #
@@ -49,3 +51,45 @@ room['treasure'].s_to = room['narrow']
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
+
+while True:
+    current = newPlayer.room
+    print(f"****Hello {newPlayer.name}. your current location is {current}****")
+    print('-------------------------------------------------------')
+    choice = input(f"which direction would you like to go? [n, e, s, w, q to quit]: ")
+    print('-------------------------------------------------------')
+    if choice == "n":
+        if current.n_to == None:
+            print('-------------------------------------------------------')
+            print("**There's nothing there!**")
+            print('-------------------------------------------------------')
+        else:
+            newPlayer.room = current.n_to
+    elif choice == "e":
+        if current.e_to == None:
+            print('-------------------------------------------------------')
+            print("**There's nothing there!**")
+            print('-------------------------------------------------------')
+        else:
+            newPlayer.room = current.e_to
+    elif choice == "s":
+        if current.s_to == None:
+            print('-------------------------------------------------------')
+            print("**There's nothing there!**")
+            print('-------------------------------------------------------')
+        else:
+            newPlayer.room = current.s_to
+    elif choice == "w":
+        if current.w_to == None:
+            print('-------------------------------------------------------')
+            print("**There's nothing there!**")
+            print('-------------------------------------------------------')
+        else:
+            newPlayer.room = current.w_to
+    elif choice == "q":
+        print("Thanks for playing!")
+        exit()
+    else:
+        print('-------------------------------------------------------')
+        print("Forbidden movement input.")
+        print('-------------------------------------------------------')
