@@ -20,7 +20,7 @@ to north. The smell of gold permeates the air."""),
 chamber! Sadly, it has already been looted by
 earlier adventurers. All that is left is a single piece of gold. The only exit is to the south."""),
 
-'hidden': Room("Hidden Room", """You've managed to cross the overlook and find a hidden room!""")
+    'hidden': Room("Hidden Room", """You've managed to cross the overlook and find a hidden room!""")
 }
 
 # Declare items
@@ -67,7 +67,6 @@ room['treasure'].add_item(item['gold'])
 newPlayer = Player('Austin', room['outside'])
 
 
-
 # Write a loop that:
 #
 # * Prints the current room name
@@ -80,55 +79,47 @@ newPlayer = Player('Austin', room['outside'])
 # If the user enters "q", quit the game.
 
 
+def check_move(move):
+    current = newPlayer.room
+    if current.__dict__[f'{move}_to'] == None:
+        print("\n**There's nothing there!**")
+    elif current.__dict__[f'{move}_to'] == room['hidden']:
+        if item['rope'] in newPlayer.inventory:
+            print(
+                '\nYou manage to throw your rope and hook it on some rocks then swing across!')
+            newPlayer.room = current.__dict__[f'{move}_to']
+        else:
+            print('\nYou need a rope!')
+    elif current.s_to == room['overlook']:
+        if item['rope'] in newPlayer.inventory:
+            print(
+                '\nYou manage to throw your rope and hook it on some rocks then swing across!')
+            newPlayer.room = current.s_to
+        else:
+            print('\nYou need a rope!')
+    else:
+        newPlayer.room = current.__dict__[f'{move}_to']
+
 
 while True:
     current = newPlayer.room
     items = newPlayer.room.roomItems
-    print(f"\n****Hello {newPlayer.name}. your current location is {current}****")
+    movement_choice = ['n', 'e', 's', 'w']
+    print(
+        f"\n****Hello {newPlayer.name}. your current location is {current}****")
+
     print(f"\nItems in the area:")
     for i in items:
         print(i)
     print('-------------------------------------------------------')
-    choice = input(f"what would you like to do? Move: [n, e, s, w] Interact: [pickup (item), drop (item), i(inventory)] q(quit): ")
-    if choice == "n":
-        if current.n_to == None:
-            print("\n**There's nothing there!**")
-        elif current.n_to == room['hidden']:
-            if item['rope'] in newPlayer.inventory:
-                print('\nYou manage to throw your rope and hook it on some rocks then swing across!')
-                newPlayer.room = current.n_to
-            else:
-                print('\nYou need a rope!')
-        else:
-            newPlayer.room = current.n_to
-    elif choice == "e":
-        if current.e_to == None:
-            print("\n**There's nothing there!**")
-        else:
-            newPlayer.room = current.e_to
-    elif choice == "s":
-        if current.s_to == None:
-            print("\n**There's nothing there!**")
-        elif current.s_to == room['overlook']:
-            if item['rope'] in newPlayer.inventory:
-                print('\nYou manage to throw your rope and hook it on some rocks then swing across!')
-                newPlayer.room = current.s_to
-            else:
-                print('\nYou need a rope!')
-        else:
-            newPlayer.room = current.s_to
-    elif choice == "w":
-        if current.w_to == None:
-            print("\n**There's nothing there!**")
-        else:
-            newPlayer.room = current.w_to
+    choice = input(
+        f"what would you like to do? Move: [n, e, s, w] Interact: [pickup (item), drop (item), i(inventory)] q(quit): ")
+    if choice in movement_choice:
+        check_move(choice)
     elif choice == "i" or choice == "inventory":
         print("\nInventory:")
         for i in newPlayer.inventory:
             print(i)
-    elif choice == "q":
-        print("Thanks for playing!")
-        exit()
     elif choice.split()[0] == "pickup":
         item_choice = choice.split()[1]
         if item_choice in item.keys():
@@ -151,5 +142,8 @@ while True:
                 print(f"\nYou don't own a {item[item_to_drop].name}")
         else:
             print("\nThat item doesn't exist.")
+    elif choice == "q":
+        print("Thanks for playing!")
+        exit()
     else:
         print("\nForbidden movement input.")
